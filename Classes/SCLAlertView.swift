@@ -62,7 +62,7 @@ class SCLAlertViewResponder {
 	}
 }
 
-let kCircleHeightBackground: CGFloat = 62.0
+let kCircleBGHeight: CGFloat = 62.0
 
 // The Main Class
 class SCLAlertView: UIViewController {
@@ -85,7 +85,7 @@ class SCLAlertView: UIViewController {
     var labelTitle = UILabel()
     var viewText = UITextView()
     var contentView = UIView()
-    var circleBG = UIView(frame:CGRect(x:0, y:0, width:kCircleHeightBackground, height:kCircleHeightBackground))
+    var circleBG = UIView(frame:CGRect(x:0, y:0, width:kCircleBGHeight, height:kCircleBGHeight))
 	var circleView = UIView()
     var circleIconImageView = UIImageView()
     var durationTimer: NSTimer!
@@ -106,17 +106,18 @@ class SCLAlertView: UIViewController {
 		// Content View
         contentView.backgroundColor = UIColor(white:1, alpha:1)
         contentView.layer.cornerRadius = 5
-        contentView.layer.masksToBounds = true
-        contentView.layer.borderWidth = 0.5
 		contentView.addSubview(labelTitle)
 		contentView.addSubview(viewText)
 		// Circle View
 		circleBG.backgroundColor = UIColor.whiteColor()
 		circleBG.layer.cornerRadius = circleBG.frame.size.height / 2
-		view.addSubview(circleBG)
+		var x = (kWindowWidth - kCircleBGHeight) / 2
+		var y = -(kCircleBGHeight * 0.8)
+		circleBG.frame = CGRect(x:x, y:y, width:kCircleBGHeight, height:kCircleBGHeight)
+		contentView.addSubview(circleBG)
 		circleBG.addSubview(circleView)
 		circleView.addSubview(circleIconImageView)
-		var x = (kCircleHeightBackground - kCircleHeight) / 2
+		x = (kCircleBGHeight - kCircleHeight) / 2
 		circleView.frame = CGRect(x:x, y:x, width:kCircleHeight, height:kCircleHeight)
 		circleView.layer.cornerRadius = circleView.frame.size.height / 2
 		x = (kCircleHeight - kCircleIconHeight) / 2
@@ -159,9 +160,6 @@ class SCLAlertView: UIViewController {
 		var x = (sz.width - kWindowWidth) / 2
 		var y = (sz.height - kWindowHeight -  (kCircleHeight / 8)) / 2
 		contentView.frame = CGRect(x:x, y:y, width:kWindowWidth, height:kWindowHeight)
-		y -= kCircleHeightBackground * 0.6
-		x = (sz.width - kCircleHeightBackground) / 2
-		circleBG.frame = CGRect(x:x, y:y, width:kCircleHeightBackground, height:kCircleHeightBackground)
 		// Subtitle
 		y = kTitleTop + kTitleHeight
 		viewText.frame = CGRect(x:12, y:y, width: kWindowWidth - 24, height:kTextHeight)
@@ -362,15 +360,11 @@ class SCLAlertView: UIViewController {
             durationTimer = NSTimer.scheduledTimerWithTimeInterval(duration!, target: self, selector: Selector("hideView"), userInfo: nil, repeats: false)
         }
         
-        // Animate in the alert view
-        UIView.animateWithDuration(0.2, animations: {
-				self.view.frame.origin.y = rv.center.y - 100
+        // Animate the content view in
+		UIView.animateWithDuration(0.2, delay:0.0, usingSpringWithDamping:0.4, initialSpringVelocity:0.0, options:UIViewAnimationOptions.allZeros, animations:{
+				self.contentView.frame.origin.y = self.view.center.y - 100
 				self.view.alpha = 1
-            }, completion: { finished in
-                UIView.animateWithDuration(0.2, animations: {
-                    self.view.center = rv.center
-				})
-        })
+			}, completion:nil)
         // Chainable objects
         return SCLAlertViewResponder(alertview: self)
     }
